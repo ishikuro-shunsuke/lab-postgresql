@@ -1,4 +1,4 @@
-# Learn PostgrSQL
+# Learn PostgreSQL
 
 An environment for learning PostgreSQL.
 
