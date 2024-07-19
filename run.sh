@@ -1,0 +1,1 @@
+echo input.sql | entr docker compose exec psql psql -U postgres -f input.sql

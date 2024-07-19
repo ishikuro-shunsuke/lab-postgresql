@@ -1,0 +1,9 @@
+services:
+  psql:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: _
+    volumes:
+      - ./:/work
+    working_dir: /work

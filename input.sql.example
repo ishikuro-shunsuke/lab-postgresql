@@ -1,0 +1,183 @@
+-- init
+\set QUIET on
+
+-- drop all tables
+select
+  'drop table ' || tablename || ' cascade;'
+  from
+    pg_tables
+  where
+   schemaname = 'public'
+  \g /dev/null
+  \gexec
+
+-- configure
+\pset null '(null)'
+
+-- configure for interactive mode
+\set COMP_KEYWORD_CASE upper
+\set HISTFILE ~/.psql_history- :DBNAME
+\set HISTCONTROL ignoredups
+\set PROMPT2 '%R> '
+
+
+-- seed for chapter 1
+create table items (
+  id       char(4)      not null,
+  name     varchar(100) not null,
+  category varchar(32)  not null,
+  sale_price      integer,
+  purchase_price  integer,
+  created_at date,
+  primary key (id)
+);
+
+begin transaction;
+  insert into items values ('0001', 'Tシャツ',        '衣服', 1000, 500, '2009-09-20');
+  insert into items values ('0002', '穴あけパンチ',    '事務用品', 500,  320, '2009-09-11');
+  insert into items values ('0003', 'カッターシャツ',  '衣服', 4000, 2800, NULL);
+  insert into items values ('0004', '包丁',           'キッチン', 3000, 2800, '2009-09-20');
+  insert into items values ('0005', '圧力なべ',       'キッチン', 6800, 5000, '2009-01-15');
+  insert into items values ('0006', 'フォーク',        'キッチン', 500, NULL, '2009-09-20');
+  insert into items values ('0007', 'おろしがね',      'キッチン', 880, 790, '2008-04-28');
+  insert into items values ('0008', 'ボールペン',      '事務用品', 100, NULL, '2009-11-11');
+commit;
+
+create table shop_items (
+  shop_id char(4) not null,
+  shop_name varchar(200) not null,
+  item_id char(4) not null,
+  amount integer not null,
+  primary key (shop_id, item_id)
+);
+
+begin transaction;
+  insert into shop_items (shop_id, shop_name, item_id, amount) values ('000A', '東京', '0001', 30);
+  insert into shop_items (shop_id, shop_name, item_id, amount) values ('000A', '東京', '0002', 50);
+  insert into shop_items (shop_id, shop_name, item_id, amount) values ('000A', '東京', '0003', 10);
+  insert into shop_items (shop_id, shop_name, item_id, amount) values ('000B', '名古屋', '0002', 30);
+  insert into shop_items (shop_id, shop_name, item_id, amount) values ('000B', '名古屋', '0003', 120);
+  insert into shop_items (shop_id, shop_name, item_id, amount) values ('000B', '名古屋', '0004', 20);
+  insert into shop_items (shop_id, shop_name, item_id, amount) values ('000B', '名古屋', '0006', 10);
+  insert into shop_items (shop_id, shop_name, item_id, amount) values ('000B', '名古屋', '0007', 40);
+  insert into shop_items (shop_id, shop_name, item_id, amount) values ('000C', '大阪', '0003', 20);
+  insert into shop_items (shop_id, shop_name, item_id, amount) values ('000C', '大阪', '0004', 50);
+  insert into shop_items (shop_id, shop_name, item_id, amount) values ('000C', '大阪', '0006', 90);
+  insert into shop_items (shop_id, shop_name, item_id, amount) values ('000C', '大阪', '0007', 70);
+  insert into shop_items (shop_id, shop_name, item_id, amount) values ('000D', '東京', '0001', 100);
+commit;
+-- end of seed for chapter 1
+
+-- seed for chapter 6
+create table vectors (
+  m numeric (10,3),
+  n integer,
+  p integer
+);
+begin transaction;
+  insert into vectors(m, n, p) values (500, 0, null);
+  insert into vectors(m, n, p) values (-180, 0, null);
+  insert into vectors(m, n, p) values (null, null, null);
+  insert into vectors(m, n, p) values (null, 7, 3);
+  insert into vectors(m, n, p) values (null, 5, 2);
+  insert into vectors(m, n, p) values (null, 4, null);
+  insert into vectors(m, n, p) values (8, 4, 3);
+  insert into vectors(m, n, p) values (2.27, 1, null);
+  insert into vectors(m, n, p) values (null, 1, null);
+  insert into vectors(m, n, p) values (8.76, null, null);
+commit;
+
+create table messages (
+  m1 varchar(40),
+  m2 varchar(40),
+  m3 varchar(40)
+);
+begin transaction;
+  insert into messages (m1, m2, m3) values ('あいう', 'えお', null);
+  insert into messages (m1, m2, m3) values ('abc', 'def', null);
+  insert into messages (m1, m2, m3) values ('山田', '太郎', 'です');
+  insert into messages (m1, m2, m3) values ('aaa', 'えお', null);
+  insert into messages (m1, m2, m3) values (null, 'あああ', null);
+  insert into messages (m1, m2, m3) values ('@!#$%', null, null);
+  insert into messages (m1, m2, m3) values ('ABC', null, null);
+  insert into messages (m1, m2, m3) values ('aBC', null, null);
+  insert into messages (m1, m2, m3) values ('abc太郎', 'abc', 'ABC');
+  insert into messages (m1, m2, m3) values ('abcdefabc', 'abc', 'ABC');
+  insert into messages (m1, m2, m3) values ('ミックマック', 'ッ', 'っ');
+commit;
+
+create table dummy_strings (
+  str varchar(6) not null,
+  primary key (str)
+);
+begin transaction;
+  insert into dummy_strings (str) values ('abcddd');
+  insert into dummy_strings (str) values ('dddabc');
+  insert into dummy_strings (str) values ('abdddc');
+  insert into dummy_strings (str) values ('abcdd');
+  insert into dummy_strings (str) values ('ddabc');
+  insert into dummy_strings (str) values ('abddc');
+commit;
+-- end of seed for chapter 6
+
+-- seed for chapter 7
+create table items2 (
+  id char(4) not null,
+  name varchar(100) not null,
+  category varchar(32) not null,
+  sale_price integer,
+  purchase_price integer,
+  created_at date,
+  primary key (id)
+);
+begin transaction;
+  insert into items2 values ('0001', 'Tシャツ', '衣服', 1000, 500, '2008-09-20');
+  insert into items2 values ('0002', '穴あけパンチ', '事務用品', 500, 320, '2008-09-11');
+  insert into items2 values ('0003', 'カッターシャツ', '衣服', 4000, 2800, null);
+  insert into items2 values ('0009', '手袋', '衣服', 800, 500, null);
+  insert into items2 values ('0010', 'やかん', 'キッチン', 2000, 1700, '2008-09-20');
+commit;
+
+create table stocks (
+  warehouse_id char(4) not null,
+  item_id char(4) not null,
+  amount integer not null,
+  primary key (warehouse_id, item_id)
+);
+begin transaction;
+  insert into stocks (warehouse_id, item_id, amount) values ('W001', '0001', 0);
+  insert into stocks (warehouse_id, item_id, amount) values ('W001', '0002', 120);
+  insert into stocks (warehouse_id, item_id, amount) values ('W001', '0003', 20);
+  insert into stocks (warehouse_id, item_id, amount) values ('W001', '0004', 3);
+  insert into stocks (warehouse_id, item_id, amount) values ('W001', '0005', 0);
+  insert into stocks (warehouse_id, item_id, amount) values ('W001', '0006', 99);
+  insert into stocks (warehouse_id, item_id, amount) values ('W001', '0007', 999);
+  insert into stocks (warehouse_id, item_id, amount) values ('W001', '0008', 200);
+  insert into stocks (warehouse_id, item_id, amount) values ('W002', '0001', 10);
+  insert into stocks (warehouse_id, item_id, amount) values ('W002', '0002', 25);
+  insert into stocks (warehouse_id, item_id, amount) values ('W002', '0003', 34);
+  insert into stocks (warehouse_id, item_id, amount) values ('W002', '0004', 19);
+  insert into stocks (warehouse_id, item_id, amount) values ('W002', '0005', 99);
+  insert into stocks (warehouse_id, item_id, amount) values ('W002', '0006', 0);
+  insert into stocks (warehouse_id, item_id, amount) values ('W002', '0007', 0);
+  insert into stocks (warehouse_id, item_id, amount) values ('W002', '0008', 18);
+commit;
+-- end of seed for chapter 7
+
+\set QUIET off
+\set ECHO queries
+-- end of init
+
+-- *********** WRITE HERE ***********
+
+select * from items;
+
+-- print now
+\set QUIET on
+\unset ECHO
+\t
+SET SESSION timezone TO 'Asia/Tokyo';
+\echo
+select format('<<<< %s', now());
+\echo --------------------------------------------------------------------------------------------
+
